@@ -82,17 +82,12 @@ The FastAPI voice bot API will be available at:
 * Faster-Whisper — speech-to-text for voice input
 * HTML/JS — frontend UI
 
----
 
-## Contributors
 
-* Maisha Tabassum — Lead developer, Bangla TTS, PHQ-9 logic, Gemma integration
-* (Add other contributors as needed)
-
----
 
 ## Disclaimer
 
 This tool is for mental health self-assessment and support only — not a replacement for professional diagnosis or treatment. Seek professional help if in distress.
 
 ---
+
