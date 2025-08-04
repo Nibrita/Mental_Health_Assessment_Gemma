@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Voice PHQ-9 Bot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url('static/images/bgc.png') no-repeat center center fixed;
+      background-size: cover;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    .chat-box {
+      border: 1px solid #ddd;
+      padding: 1rem;
+      height: 300px;
+      overflow-y: auto;
+      background: #fff;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+    }
+    .msg.user { background: #dcf8c6; align-self: flex-end; }
+    .msg.bot  { background: #e7e7e7; align-self: flex-start; }
+    .msg {
+      padding: 0.5rem 1rem;
+      margin: 0.5rem 0;
+      border-radius: 15px;
+      max-width: 80%;
+      white-space: pre-line;
+    }
+    .controls {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    #progress-container {
+      margin-top: 1rem;
+    }
+    #progress-bar-wrapper {
+      height: 12px;
+      background: #e0e0e0;
+      border-radius: 6px;
+      margin-top: 4px;
+    }
+    #progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #007bff;
+      border-radius: 6px;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🧠 Voice PHQ-9 Bot</h2>
+
+    <label for="voice-select">🎤 Choose Voice:</label>
+    <select id="voice-select">
+      <option value="default">Default</option>
+      <option value="Google US English">Google US English (Female)</option>
+      <option value="Google UK English Male">Google UK English (Male)</option>
+      <option value="Google Deutsch">German</option>
+      <option value="Google हिंदी">Hindi</option>
+      <option value="Google 日本語">Japanese</option>
+    </select>
+
+    <div class="chat-box" id="chat-box"></div>
+
+    <div class="controls">
+      <button id="start-btn">🎙️ Start</button>
+      <button id="stop-btn" disabled>⏹️ Stop</button>
+      <button id="restart-btn">🔄 Restart</button>
+    </div>
+
+    <div id="loading" style="text-align:center; display:none;">
+      <p>🌀 Processing voice...</p>
+    </div>
+
+    <div id="progress-container">
+      <div style="display: flex; justify-content: space-between; font-size: 14px;">
+        <span id="progress-label">Progress: 0 / 9</span>
+      </div>
+      <div id="progress-bar-wrapper">
+        <div id="progress-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE_URL = "http://127.0.0.1:8001"; // FastAPI backend URL
+
+    const chatBox = document.getElementById('chat-box');
+    const startBtn = document.getElementById('start-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const loading = document.getElementById('loading');
+
+    let recorder;
+    let audioChunks = [];
+
+    // Add message to chat box
+    function addMessage(text, sender) {
+      const msg = document.createElement('div');
+      msg.className = 'msg ' + sender;
+      msg.textContent = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Speech synthesis voices
+    let availableVoices = [];
+
+    function loadVoices() {
+      availableVoices = speechSynthesis.getVoices();
+      availableVoices.sort((a, b) => a.name.localeCompare(b.name));
+      // console.log("Voices loaded:", availableVoices.map(v => v.name));
+    }
+
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    // Speak text using selected voice or fallback
+    function speak(text) {
+      if (!availableVoices.length) return;
+
+      const selectedVoiceName = document.getElementById('voice-select').value;
+      const selectedVoice = availableVoices.find(voice => voice.name === selectedVoiceName);
+
+      // Split text to sentences for smooth speech
+      const sentences = text
+        .replace(/[\u{1F600}-\u{1F6FF}]/gu, '')  // remove emojis
+        .split(/(?<=[.!?])\s+/)
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      if (!sentences.length) return;
+
+      speechSynthesis.cancel();
+
+      function speakNext(index) {
+        if (index >= sentences.length) return;
+
+        const utter = new SpeechSynthesisUtterance(sentences[index]);
+        if (selectedVoice) {
+          utter.voice = selectedVoice;
+          utter.lang = selectedVoice.lang || 'en-US';
+        } else {
+          utter.lang = 'en-US';
+        }
+        utter.rate = 0.95;
+
+        utter.onend = () => setTimeout(() => speakNext(index + 1), 250);
+        speechSynthesis.speak(utter);
+      }
+
+      speakNext(0);
+    }
+
+    // Send chat message text to backend /phq endpoint
+    async function sendChatMessage(message) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/phq`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_response: message }),
+        });
+
+        const data = await res.json();
+
+        if (data.response) {
+          addMessage(data.response, 'bot');
+
+          if (data.audio_url) {
+            // Play backend-generated TTS audio file
+            const audio = new Audio(API_BASE_URL + data.audio_url);
+            audio.play().catch(e => {
+              console.warn("Audio playback failed:", e);
+              speak(data.response);  // fallback to browser TTS
+            });
+          } else {
+            // fallback to browser TTS
+            speak(data.response);
+          }
+
+          updateProgressBar(data.response);
+        }
+      } catch (err) {
+        alert('Error communicating with server: ' + err.message);
+      }
+    }
+
+  
+    function updateProgressBar(replyText) {
+      const phq9Questions = [
+        "Over the last 2 weeks, how often have you had little interest or pleasure in doing things?",
+        "Over the last 2 weeks, how often have you been feeling down, depressed, or hopeless?",
+        "Over the last 2 weeks, how often have you had trouble falling or staying asleep, or sleeping too much?",
+        "Over the last 2 weeks, how often have you felt tired or had little energy?",
+        "Over the last 2 weeks, how often have you had poor appetite or been overeating?",
+        "Over the last 2 weeks, how often have you felt bad about yourself",
+        "Over the last 2 weeks, how often have you had trouble concentrating",
+        "Over the last 2 weeks, how often have you been moving or speaking so slowly",
+        "Over the last 2 weeks, how often have you had thoughts that you would be better off dead"
+      ];
+
+      for (let i = 0; i < phq9Questions.length; i++) {
+        if (replyText.includes(phq9Questions[i])) {
+          const current = i;
+          const percent = (current / 9) * 100;
+          document.getElementById('progress-bar').style.width = `${percent}%`;
+          document.getElementById('progress-label').textContent = `Progress: ${current} / 9`;
+          return;
+        }
+      }
+
+      if (replyText.includes("Final message")) {
+        document.getElementById('progress-bar').style.width = `100%`;
+        document.getElementById('progress-label').textContent = `Progress: 9 / 9`;
+      }
+
+      if (replyText.toLowerCase().includes("start") || replyText.includes("Let's begin")) {
+        document.getElementById('progress-bar').style.width = `0%`;
+        document.getElementById('progress-label').textContent = `Progress: 0 / 9`;
+      }
+    }
+
+    // Send recorded audio file to backend /transcribe then send transcript to /phq
+    async function sendAudio(file) {
+      const fd = new FormData();
+      fd.append('file', file);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/transcribe`, {
+          method: 'POST',
+          body: fd
+        });
+        const { transcript } = await res.json();
+        addMessage(transcript, 'user');
+        await sendChatMessage(transcript);
+      } catch (e) {
+        addMessage("❌ Error processing voice. Try again.", 'bot');
+        console.error(e);
+      }
+    }
+
+    // Button event handlers
+    startBtn.onclick = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recorder = new MediaRecorder(stream);
+      audioChunks = [];
+
+      recorder.ondataavailable = e => audioChunks.push(e.data);
+      recorder.onstop = async () => {
+        loading.style.display = 'block';
+        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+        const file = new File([blob], 'voice.webm', { type: 'audio/webm' });
+        await sendAudio(file);
+        loading.style.display = 'none';
+      };
+
+      recorder.start();
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    };
+
+    stopBtn.onclick = () => {
+      recorder.stop();
+      stopBtn.disabled = true;
+      startBtn.disabled = false;
+    };
+
+    restartBtn.onclick = async () => {
+      chatBox.innerHTML = '';
+      updateProgressBar("start");
+      await sendChatMessage("start");
+    };
+
+    // On page load: greet user and start session
+    window.onload = () => {
+      addMessage("👋 Hello! You can start speaking to begin.", 'bot');
+
+      if (availableVoices.length > 0) {
+        sendChatMessage("start");
+      } else {
+        window.speechSynthesis.onvoiceschanged = () => {
+          loadVoices();
+          sendChatMessage("start");
+        };
+      }
+    };
+  </script>
+</body>
+</html>

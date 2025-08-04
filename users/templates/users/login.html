@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | Mental Health Assessment</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    body {
+      background: #f7f7f7;
+      font-family: "Cooper Black", "Arial Black", Impact, sans-serif;
+    }
+
+    .back-home {
+  text-align: left;
+  margin-top: 40px;
+}
+
+.back-home a {
+  color: #2e7d32;
+  font-weight: bold;
+  font-size: 14px;
+  text-decoration: none;
+  font-family: "Cooper Black", "Arial Black", Impact, sans-serif;
+  transition: color 0.3s ease;
+}
+
+.back-home a:hover {
+  color: #1b5e20;
+  text-decoration: underline;
+}
+
+
+
+    
+
+    .login-container {
+      max-width: 420px;
+      margin: 100px auto;
+      padding: 40px 30px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .login-container h2 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      color: #222;
+    }
+
+    .login-container form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .login-container input[type="text"],
+    .login-container input[type="password"] {
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      font-family: inherit;
+    }
+
+    .login-container button {
+      padding: 12px;
+      background-color: #2e7d32;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-container button:hover {
+      background-color: #1b5e20;
+    }
+
+    .login-container .register-link {
+      margin-top: 25px;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .login-container .register-link a {
+      color: #2e7d32;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .login-container .register-link a:hover {
+      text-decoration: underline;
+    }
+
+    .message {
+      color: #d32f2f;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    
+  </style>
+</head>
+<body>
+
+  <div class="login-container scroll-fade">
+    <h2>Welcome!</h2>
+
+    {% if message %}
+      <div class="message">{{ message }}</div>
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Log In</button>
+    </form>
+
+    <div class="register-link">
+      Don't have an account? <a href="{% url 'register' %}">Register here</a>
+    </div>
+  
+
+
+  <div class="back-home">
+    <a href="{% url 'home' %}">← Back to Home</a>
+  </div>
+</div>
+  
+  <script>
+    // Trigger fade-in for login box
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+        }
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.scroll-fade').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

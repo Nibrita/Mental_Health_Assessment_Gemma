@@ -1,0 +1,622 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Start New Assessment - Mental Health Assessment</title>
+
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'voice_bot/css/voicebot.css' %}" />
+
+  <style>
+    /* Body and layout */
+    body {
+      background-color: #f4f8fb;
+      background: url("{% static 'images/bgc.png' %}") no-repeat center center fixed;
+      background-size: cover;
+      padding: 2rem;
+      font-family: "Georgia", serif;
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+      width: 280px;
+      background: #ffffff;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      padding: 30px 20px;
+      box-sizing: border-box;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 30px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #2e7d32;
+      user-select: none;
+    }
+
+    .nav-item {
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #444;
+      user-select: none;
+      transition: background-color 0.3s, color 0.3s;
+      text-decoration: none;
+      display: block;
+    }
+
+    .nav-item:hover {
+      background-color: #e6f4ea;
+      color: #2e7d32;
+    }
+
+    .nav-item.active {
+      background-color: #2e7d32;
+      color: white;
+    }
+
+    /* Main content area */
+    .main-content {
+      flex: 1;
+      padding: 40px 60px;
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 0 16px 16px 0;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+      max-width: 900px;
+      margin: 60px auto 60px 0;
+      color: #000;
+    }
+
+    /* Voice bot container styling */
+    .dashboard-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+      background: linear-gradient(to right, #a97cda, #c5d5f0);
+      border-radius: 15px;
+      color: white;
+    }
+
+    .dashboard-container h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .voice-bot-container {
+      margin-top: 30px;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      color: #000;
+    }
+
+    .voice-bot-container h3 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      text-align: center;
+      color: white;
+    }
+
+    .chat-box {
+      border: 1px solid #ddd;
+      padding: 1rem;
+      height: 400px;
+      overflow-y: auto;
+      background: #fff;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      color: #000;
+    }
+
+    .msg.user { background: #dcf8c6; align-self: flex-end; }
+    .msg.bot { background: #e7e7e7; align-self: flex-start; }
+    .msg {
+      padding: 0.5rem 1rem;
+      margin: 0.5rem 0;
+      border-radius: 15px;
+      max-width: 80%;
+      white-space: pre-line;
+      word-wrap: break-word;
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .controls button {
+      padding: 10px 25px;
+      background: #5a80ff;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .controls button:disabled {
+      background: #b0c4de;
+      cursor: not-allowed;
+    }
+
+    #loading {
+      text-align: center;
+      display: none;
+      color: #ffffff;
+      margin-top: 10px;
+    }
+    .voice-select-wrapper {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    #voice-select {
+      padding: 6px 12px;
+      font-size: 0.95rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+
+    #progress-container {
+      margin-top: 1rem;
+    }
+    #progress-bar-wrapper {
+      height: 12px;
+      background: #e0e0e0;
+      border-radius: 6px;
+      margin-top: 4px;
+    }
+    #progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #96c5f7;
+      border-radius: 6px;
+      transition: width 0.3s;
+    }
+    /* Input and send button */
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .input-row input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    .input-row button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      background: #2e7d32;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+    .input-row button:hover {
+      background-color: #1b5e20;
+    }
+
+    /* Logout button */
+    form.logout-form {
+      margin-top: auto;
+    }
+    form.logout-form button {
+      width: 100%;
+      background-color: #2e7d32;
+      padding: 12px 0;
+      border-radius: 8px;
+      border: none;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    form.logout-form button:hover {
+      background-color: #1b5e20;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        padding: 10px 20px;
+        overflow-x: auto;
+      }
+      .nav-item {
+        margin-right: 15px;
+        margin-bottom: 0;
+        white-space: nowrap;
+      }
+      .main-content {
+        margin: 20px;
+        max-width: 100%;
+        border-radius: 16px;
+        padding: 20px;
+      }
+      .dashboard-container {
+        max-width: 100%;
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+<header class="header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 999; background: white;">
+  <div class="logo" style="padding-left: 30px;">Mental<span>Health</span> Assessment</div>
+  <nav>
+    <ul style="display: flex; gap: 20px; padding-right: 30px; list-style: none; margin: 0;">
+      <li><a href="{% url 'home' %}">Home</a></li>
+      <li><a href="#mission">Our Mission</a></li>
+      <li><a href="#">Testimonials</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="{% url 'register' %}" class="btn dark" style="padding: 8px 16px; background:#2e7d32; color:#fff; border-radius:6px; text-decoration:none;">Get Started</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div style="height: 60px;"></div> <!-- Spacer for fixed header -->
+
+<div class="sidebar">
+  <h2>Dashboard</h2>
+  <a href="{% url 'dashboard' %}" class="nav-item">Assessment Status</a>
+  <a href="{% url 'start_assessment' %}" class="nav-item active">New Assessment</a>
+  <a href="#" class="nav-item">Weekly Progress</a>
+  <a href="#" class="nav-item">Conversations</a>
+  <a href="#" class="nav-item">Suggestions</a>
+  <a href="#" class="nav-item">Weekly Goals</a>
+  <a href="#" class="nav-item">Download Report</a>
+  <form method="post" action="{% url 'logout' %}" class="logout-form">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+  </form>
+</div>
+
+<main class="main-content">
+  <div class="dashboard-container">
+    <h2>Welcome, {{ user.username }}!</h2>
+    <p>This is your voice assessment dashboard.</p>
+
+    <div class="voice-bot-container">
+      <h3>Voice PHQ9 Bot</h3>
+
+      <div class="voice-select-wrapper">
+        <label for="voice-select">🎤 Choose Voice:</label>
+        <select id="voice-select">
+          <option value="default">Default</option>
+          <!-- JS will populate -->
+        </select>
+      </div>
+
+      <div class="chat-box" id="chat-box"></div>
+
+      <div id="progress-container">
+        <div style="display: flex; justify-content: space-between; font-size: 14px;">
+          <span id="progress-label">Progress: 0 / 9</span>
+        </div>
+        <div id="progress-bar-wrapper">
+          <div id="progress-bar"></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="start-btn" aria-label="Start the voice bot">🎙️ Start</button>
+        <button id="stop-btn" disabled aria-label="Stop the voice bot">⏹️ Stop</button>
+        <button id="restart-btn" aria-label="Restart the voice bot">🔄 Restart</button>
+      </div>
+
+      <div class="input-row">
+        <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off" />
+        <button id="send-btn" aria-label="Send message">Send</button>
+      </div>
+
+      <div id="loading" style="color: white; display:none; text-align:center; margin-top: 10px;">
+        <p>🌀 Processing voice...</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const chatBox = document.getElementById('chat-box');
+  const startBtn = document.getElementById('start-btn');
+  const stopBtn = document.getElementById('stop-btn');
+  const restartBtn = document.getElementById('restart-btn');
+  const loading = document.getElementById('loading');
+  const progressBar = document.getElementById('progress-bar');
+  const userInput = document.getElementById('user-input');
+  const sendBtn = document.getElementById('send-btn');
+  const voiceSelect = document.getElementById('voice-select');
+
+  const API_BASE_URL = "http://127.0.0.1:8001";
+
+  let recorder;
+  let audioChunks = [];
+  let voices = [];
+  let progressInterval;
+
+  function addMessage(text, sender) {
+    const msg = document.createElement('div');
+    msg.className = 'msg ' + sender;
+    msg.textContent = text;
+    chatBox.appendChild(msg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function populateVoiceList() {
+    voices = speechSynthesis.getVoices();
+
+    if (voices.length === 0) {
+      setTimeout(populateVoiceList, 200);
+      return;
+    }
+
+    const allowedVoiceLabels = {
+      "Google US English": "English (US, Female)",
+      "Google UK English Male": "English (UK, Male)",
+      "Google Deutsch": "German",
+      "Google हिंदी": "Hindi",
+      "Google 日本語": "Japanese"
+    };
+
+    const orderedVoiceNames = [
+      "Google US English",
+      "Google UK English Male",
+      "Google हिंदी",
+      "Google 日本語",
+      "Google Deutsch"
+    ];
+
+    voiceSelect.innerHTML = '';
+    const defaultOption = document.createElement('option');
+    defaultOption.value = 'default';
+    defaultOption.textContent = 'Default';
+    voiceSelect.appendChild(defaultOption);
+
+    orderedVoiceNames.forEach((voiceName) => {
+      const voice = voices.find(v => v.name === voiceName);
+      if (voice) {
+        const option = document.createElement('option');
+        option.value = voices.indexOf(voice);
+        option.textContent = allowedVoiceLabels[voiceName];
+        voiceSelect.appendChild(option);
+      }
+    });
+  }
+
+  function speak(text) {
+    if (!voices.length) {
+      console.warn("Voices not loaded yet!");
+      return;
+    }
+
+    speechSynthesis.cancel();
+
+    // Play TTS audio if available? No, handled elsewhere.
+
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'en-US';
+    const selectedValue = voiceSelect.value;
+    if (selectedValue !== 'default') {
+      const voiceIndex = Number(selectedValue);
+      if (!isNaN(voiceIndex) && voices[voiceIndex]) {
+        utter.voice = voices[voiceIndex];
+        if (voices[voiceIndex].lang) {
+          utter.lang = voices[voiceIndex].lang;
+        }
+      }
+    }
+    utter.rate = 0.95;
+    speechSynthesis.speak(utter);
+  }
+
+  async function sendStart() {
+    await fetch(`${API_BASE_URL}/phq/reset`, { method: 'POST' });
+
+    const res = await fetch(`${API_BASE_URL}/phq`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_response: "start" }),
+    });
+    const data = await res.json();
+
+    chatBox.innerHTML = '';
+    addMessage(data.response, 'bot');
+    playBotResponse(data);
+    updateProgressBar(data.response);
+  }
+
+  function updateProgressBar(replyText) {
+    const phq9Questions = [
+      "Over the last 2 weeks, how often have you had little interest or pleasure in doing things?",
+      "Over the last 2 weeks, how often have you been feeling down, depressed, or hopeless?",
+      "Over the last 2 weeks, how often have you had trouble falling or staying asleep, or sleeping too much?",
+      "Over the last 2 weeks, how often have you felt tired or had little energy?",
+      "Over the last 2 weeks, how often have you had poor appetite or been overeating?",
+      "Over the last 2 weeks, how often have you felt bad about yourself",
+      "Over the last 2 weeks, how often have you had trouble concentrating",
+      "Over the last 2 weeks, how often have you been moving or speaking so slowly",
+      "Over the last 2 weeks, how often have you had thoughts that you would be better off dead"
+    ];
+
+    for (let i = 0; i < phq9Questions.length; i++) {
+      if (replyText.toLowerCase().includes(phq9Questions[i].toLowerCase())) {
+        const current = i + 1;
+        const percent = (current / 9) * 100;
+        progressBar.style.width = `${percent}%`;
+        document.getElementById('progress-label').textContent = `Progress: ${current} / 9`;
+        return;
+      }
+    }
+
+    if (replyText.toLowerCase().includes("final message")) {
+      progressBar.style.width = '100%';
+      document.getElementById('progress-label').textContent = `Progress: 9 / 9`;
+      return;
+    }
+
+    if (replyText.toLowerCase().includes("start") || replyText.toLowerCase().includes("let's begin")) {
+      progressBar.style.width = '0%';
+      document.getElementById('progress-label').textContent = `Progress: 0 / 9`;
+    }
+  }
+
+  async function sendAudio(file) {
+    const fd = new FormData();
+    fd.append('file', file);
+
+    loading.style.display = 'block';
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/transcribe`, {
+        method: 'POST',
+        body: fd
+      });
+      const { transcript } = await res.json();
+
+      addMessage(transcript, 'user');
+
+      const res2 = await fetch(`${API_BASE_URL}/phq`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_response: transcript }),
+      });
+
+      const data = await res2.json();
+      addMessage(data.response, 'bot');
+      playBotResponse(data);
+      updateProgressBar(data.response);
+
+    } catch (err) {
+      addMessage("❌ Error processing voice. Try again.", 'bot');
+      console.error(err);
+    } finally {
+      loading.style.display = 'none';
+    }
+  }
+
+  function playBotResponse(data) {
+  // If backend says use browser TTS, or no audio URL provided, use SpeechSynthesis
+  if (data.use_browser_tts || !data.audio_url) {
+    speak(data.response);
+  } else {
+    // Otherwise, play backend-generated audio file (Bangla TTS)
+    const audio = new Audio(API_BASE_URL + data.audio_url);
+    audio.play().catch(e => {
+      console.warn("Audio playback failed, falling back to browser TTS.", e);
+      speak(data.response);
+    });
+  }
+}
+
+
+  startBtn.onclick = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recorder = new MediaRecorder(stream);
+      audioChunks = [];
+
+      recorder.ondataavailable = e => audioChunks.push(e.data);
+      recorder.onstop = async () => {
+        clearInterval(progressInterval);
+        progressBar.style.width = '0%';
+        await sendAudio(new File([new Blob(audioChunks)], 'voice.webm', { type: 'audio/webm' }));
+      };
+
+      recorder.start();
+
+      progressInterval = setInterval(() => {
+        const width = parseFloat(progressBar.style.width) || 0;
+        progressBar.style.width = Math.min(width + 1, 100) + '%';
+      }, 100);
+
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+
+    } catch (err) {
+      alert('Microphone access denied or not available.');
+    }
+  };
+
+  stopBtn.onclick = () => {
+    if (recorder && recorder.state !== 'inactive') {
+      recorder.stop();
+    }
+    stopBtn.disabled = true;
+    startBtn.disabled = false;
+  };
+
+  sendBtn.onclick = async () => {
+    const text = userInput.value.trim();
+    if (!text) return;
+
+    addMessage(text, 'user');
+    userInput.value = '';
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/phq`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_response: text }),
+      });
+
+      const data = await res.json();
+      addMessage(data.response, 'bot');
+      playBotResponse(data);
+      updateProgressBar(data.response);
+
+    } catch (err) {
+      alert('Error communicating with server: ' + err.message);
+    }
+  };
+
+  userInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendBtn.click();
+    }
+  });
+
+  speechSynthesis.onvoiceschanged = populateVoiceList;
+
+  window.onload = () => {
+    populateVoiceList();
+    sendStart();
+  };
+
+  restartBtn.onclick = async () => {
+    await sendStart();
+  };
+</script>
+
+
+</body>
+</html>

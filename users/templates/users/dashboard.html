@@ -1,0 +1,325 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Your Dashboard - Mental Health Assessment</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <style>
+    body {
+      background-color: #f4f8fb;
+      font-family: "Georgia", serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+      width: 280px;
+      background: #ffffff;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      padding: 30px 20px;
+      box-sizing: border-box;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 30px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #2e7d32;
+      user-select: none;
+    }
+
+    .nav-item {
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #444;
+      user-select: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .nav-item:hover {
+      background-color: #e6f4ea;
+      color: #2e7d32;
+    }
+
+    .nav-item.active {
+      background-color: #2e7d32;
+      color: white;
+    }
+
+    /* Main content area */
+    .main-content {
+      flex: 1;
+      padding: 40px 60px;
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 0 16px 16px 0;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+      max-width: 900px;
+      margin: 60px auto 60px 0;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    h2.section-title {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #2e7d32;
+    }
+
+    /* Button styles */
+    .btn {
+      background-color: #2e7d32;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background-color: #1b5e20;
+    }
+
+    .assessment-status {
+      background: #fef3c7;
+      padding: 20px;
+      border-left: 5px solid #f59e0b;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .conversation-box {
+      background: #f0fdf4;
+      padding: 15px;
+      border-left: 4px solid #22c55e;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .card {
+      background: #f9fafb;
+      flex: 1 1 260px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    }
+
+    .card h4 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #444;
+    }
+
+    .goal-list {
+      list-style: square;
+      padding-left: 20px;
+      font-size: 16px;
+      color: #444;
+    }
+
+    .report-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .report-link a {
+      color: #2e7d32;
+      font-weight: bold;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .report-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        padding: 10px 20px;
+        overflow-x: auto;
+      }
+      .nav-item {
+        margin-right: 15px;
+        margin-bottom: 0;
+        white-space: nowrap;
+      }
+      .main-content {
+        margin: 20px;
+        max-width: 100%;
+        border-radius: 16px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 999; background: white;">
+  <div class="logo" style="padding-left: 30px;">Mental<span>Health</span> Assessment</div>
+  <nav>
+    <ul style="display: flex; gap: 20px; padding-right: 30px; list-style: none; margin: 0;">
+      <li><a href="{% url 'home' %}">Home</a></li>
+      <li><a href="#mission">Our Mission</a></li>
+      <li><a href="#">Testimonials</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="{% url 'register' %}" class="btn dark" style="padding: 8px 16px;">Get Started</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div style="height: 70px;"></div> <!-- spacer for fixed header -->
+
+<div class="sidebar" role="navigation" aria-label="Dashboard navigation">
+  <h2>Dashboard</h2>
+  <div class="nav-item active" data-target="assessment-status">Assessment Status</div>
+  <div class="nav-item" data-target="new-assessment">New Assessment</div>
+  <div class="nav-item" data-target="progress-tracker">Weekly Progress</div>
+  <div class="nav-item" data-target="recent-conversations">Conversations</div>
+  <div class="nav-item" data-target="recommendations">Suggestions</div>
+  <div class="nav-item" data-target="weekly-goals">Weekly Goals</div>
+  <div class="nav-item" data-target="report">Download Report</div>
+  <div class="nav-item">
+    <form method="post" action="{% url 'logout' %}" style="margin-top: auto;">
+      {% csrf_token %}
+      <button class="btn" type="submit" style="width: 100%;">Logout</button>
+    </form>
+  </div>
+</div>
+
+<main class="main-content" role="main">
+
+  <section id="assessment-status" class="section active" aria-label="Assessment Status">
+    <h2 class="section-title">Current Assessment Result</h2>
+    <div class="assessment-status">
+      Status: <em>Mild Depression</em>
+      <!-- TODO: Make dynamic -->
+    </div>
+  </section>
+
+  <section id="new-assessment" class="section" aria-label="Start New Assessment">
+    <h2 class="section-title">Check In With Yourself</h2>
+    <p>Noticed some changes lately? Take a quick assessment to reflect.</p>
+    <a href="{% url 'start_assessment' %}" class="btn">Start New Assessment</a>
+  </section>
+  
+
+  <section id="progress-tracker" class="section" aria-label="Weekly Mood Progress">
+    <h2 class="section-title">Your Weekly Mood Progress</h2>
+    <img src="{% static 'images/chart_placeholder.png' %}" alt="Progress Chart" style="max-width:100%; border-radius:10px;" />
+  </section>
+
+  <section id="recent-conversations" class="section" aria-label="Recent Conversations">
+    <h2 class="section-title">Recent Conversations</h2>
+    <div class="conversation-box">Bot: “How have you been feeling lately?”</div>
+    <div class="conversation-box">You: “I feel a bit drained, even when I sleep enough.”</div>
+    <div class="conversation-box">Bot: “Thanks for sharing that. You’re not alone.”</div>
+    <a href="{% url 'chat_history' %}" class="btn" style="margin-top:10px;">View Full Conversation</a>
+  </section>
+
+  <section id="recommendations" class="section" aria-label="Personalized Suggestions">
+    <h2 class="section-title">Personalized Suggestions</h2>
+    <div class="grid">
+      <div class="card">
+        <h4>🧘‍♀️ Breathing Exercise</h4>
+        <p>Try the 4-7-8 technique. Inhale for 4, hold for 7, exhale for 8.</p>
+      </div>
+      <div class="card">
+        <h4>📓 Journal Prompt</h4>
+        <p>“What’s one thing you wish others knew about how you feel?”</p>
+      </div>
+      <div class="card">
+        <h4>🎧 Chill Playlist</h4>
+        <p>Listen to our mental reset playlist on Spotify.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="weekly-goals" class="section" aria-label="Weekly Goals">
+    <h2 class="section-title">Your Weekly Goals</h2>
+    <ul class="goal-list">
+      <li>✅ Check in 2 more times this week</li>
+      <li>🌿 Take a 15 min nature walk</li>
+      <li>🛏️ Sleep before 11 PM 3 nights</li>
+    </ul>
+  </section>
+
+  <section id="report" class="section" aria-label="Download Report">
+    <h2 class="section-title">Weekly Mental Wellness Report</h2>
+    <div class="report-link">
+      <p><a href="{% url 'download_report' %}">📥 Download Weekly Mental Wellness Report</a></p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Sidebar nav tab switching
+  const navItems = document.querySelectorAll('.nav-item[data-target]');
+  const sections = document.querySelectorAll('.section');
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      // Remove active class from nav items
+      navItems.forEach(i => i.classList.remove('active'));
+      // Hide all sections
+      sections.forEach(s => s.classList.remove('active'));
+
+      // Add active to clicked nav item
+      item.classList.add('active');
+      // Show corresponding section
+      const targetId = item.getAttribute('data-target');
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) targetSection.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

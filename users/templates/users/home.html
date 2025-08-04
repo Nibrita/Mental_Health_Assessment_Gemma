@@ -1,0 +1,221 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Illuminate Your Potential</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">Mental<span>Health</span> Assessment</div>
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#mission">Our Mission</a></li>
+            <li><a href="#">Testimonials</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="{% url 'register' %}" class="btn dark">Get Started</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="fullscreen-hero">
+    <img src="{% static 'images/SprigSky.png' %}" alt="Hero Image">
+</div>
+
+<section class="hero">
+    <div class="hero-text">
+        <h1><span class="highlight">Clarity</span><br>Starts Here</h1>
+        <p>Welcome to <strong>Mental Health Assessment</strong>. Whether you're struggling with stress, anxiety, depression, or just looking to check in with yourself — we’re here to support your journey.</p>
+        <div class="hero-buttons">
+            <a href="{% url 'register' %}" class="btn dark">Register Now!</a>
+            <a href="{% url 'login' %}" class="btn yellow">Log In</a>
+        </div>
+    </div>
+    <div class="hero-image">
+        <img src="{% static 'images/peace.png' %}" alt="Hero">
+    </div>
+</section>
+
+<section id="mission" class="mission">
+    <div class="mission-image">
+        <img src="{% static 'images/matters.png' %}" alt="Discover your light illustration">
+    </div>
+    <div class="mission-text">
+        <h2> Reflect. Understand. Heal.</h2>
+        <p>Your mind deserves attention, just like your body. Here, you’ll find a space to slow down, reflect, and better understand what you're feeling.</p>
+        <a href="{% url 'register' %}" class="btn yellow">Start Your Journey</a>
+    </div>
+</section>
+
+
+
+
+<section class="features scroll-fade">
+    <div class="features-text">
+    <h2>Why Choose Us?</h2>
+    <div class="features-grid">
+        <div class="feature">
+            <img src="{% static 'images/brain.png' %}" alt="">
+            <h3>Personalized Self-Checks</h3>
+            <p>Tailored assessments based on your needs and feelings.</p>
+        </div>
+        <div class="feature">
+            <img src="{% static 'images/kidss.png' %}" alt="">
+            <h3>100% Confidential</h3>
+            <p>Your mental wellness journey is yours alone — private and safe.</p>
+        </div>
+        <div class="feature">
+            <img src="{% static 'images/hug.png' %}" alt="">
+            <h3>Built with Experts</h3>
+            <p>Designed in collaboration with mental health professionals.</p>
+        </div>
+    </div>
+</section>
+
+<section class="testimonials scroll-fade">
+    <h2>What People Are Saying</h2>
+    <div class="testimonial-grid">
+        <div class="testimonial">
+            <p>"This platform helped me understand myself better. Simple yet powerful."</p>
+            <span>— Ayesha R.</span>
+        </div>
+        <div class="testimonial">
+            <p>"The assessments are spot-on. I felt heard even without saying a word."</p>
+            <span>— Tanvir M.</span>
+        </div>
+        <div class="testimonial">
+            <p>"Clean design, easy to use, and so helpful when I needed clarity."</p>
+            <span>— Farah A.</span>
+        </div>
+    </div>
+</section>
+
+<section class="assessments scroll-fade">
+    <h2>What You Can Explore</h2>
+    <div class="assessment-types">
+        <div class="type-card">
+            <h3>Depression</h3>
+            <p>Understand early signs and emotional patterns.</p>
+        </div>
+        <div class="type-card">
+            <h3>Anxiety</h3>
+            <p>Track anxiety levels and how it may affect your daily life.</p>
+        </div>
+        <div class="type-card">
+            <h3>Stress Management</h3>
+            <p>Learn how stress is impacting you and gain coping tools.</p>
+        </div>
+        <div class="type-card">
+            <h3>Autism & Neurodivergence</h3>
+            <p>Assess sensory or social markers related to neurodiversity.</p>
+        </div>
+    </div>
+</section>
+
+<section class="faq scroll-fade">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-container">
+        <div class="faq-item">
+            <div class="faq-question">Is this platform a substitute for therapy?</div>
+            <div class="faq-answer">
+                <p>No. Our platform supports self-reflection and awareness, but is not a replacement for professional mental health care.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">How accurate are the assessments?</div>
+            <div class="faq-answer">
+                <p>They're built using evidence-based screening methods. Results are for self-guidance, not clinical diagnosis.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Is my information confidential?</div>
+            <div class="faq-answer">
+                <p>Absolutely. We protect your data using secure practices and never share without your explicit consent.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Can I talk to a therapist here?</div>
+            <div class="faq-answer">
+                <p>Not yet, but we're working on partnerships to connect users with certified professionals soon.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Who is this platform for?</div>
+            <div class="faq-answer">
+                <p>Anyone seeking more clarity and emotional awareness — whether you're struggling or simply checking in with yourself.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="newsletter scroll-fade">
+    <div class="container">
+        <h2>Stay In The Know</h2>
+        <p>Subscribe to mental health tips, updates, and new tools.</p>
+        <form>
+            <input type="email" placeholder="Your email address">
+            <button type="submit">Subscribe</button>
+        </form>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2025 Mental Health Assessment. All rights reserved.</p>
+        <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Support</a></li>
+        </ul>
+    </div>
+</footer>
+
+<script>
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          if (entry.target.classList.contains('mission')) {
+            entry.target.classList.add('show');
+          }
+          if (entry.target.classList.contains('scroll-fade')) {
+            entry.target.classList.add('show');
+          }
+        }
+      });
+    }, { threshold: 0.2 });
+  
+    const mission = document.querySelector('.mission');
+    if (mission) observer.observe(mission);
+  
+    document.querySelectorAll('.scroll-fade').forEach(el => observer.observe(el));
+  
+    // FAQ toggle logic:
+    document.querySelectorAll('.faq-question').forEach(question => {
+      question.addEventListener('click', () => {
+        const item = question.parentElement;
+        const isActive = item.classList.contains('active');
+  
+        // Close all FAQ items first
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+  
+        // Toggle clicked FAQ
+        if (!isActive) {
+          item.classList.add('active');
+        }
+      });
+    });
+  </script>
+  
+
+
+</body>
+</html>
