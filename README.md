@@ -7,7 +7,8 @@ A multilingual, voice-capable chatbot for mental health self-assessment based on
 Supports Bangla and English conversations with empathetic voice replies, powered by **Gemma 3n**, **FastAPI**, and open-source voice tools.
 
 [View Full Project Report (Google Doc)](https://docs.google.com/document/d/1kfWjKB05gqbQSdX4Ep7T6VNGSQgcwyWUT9FtlnCCNTk/edit?tab=t.0)
-https://youtu.be/zAb9pI7pcUg?si=lIjTlouL24Oztk2d
+
+Watch the demo on [YouTube](https://www.youtube.com/watch?v=zAb9pI7pcUg)
 
 
 ---
@@ -94,6 +95,7 @@ The FastAPI voice bot API will be available at:
 This tool is for mental health self-assessment and support only — not a replacement for professional diagnosis or treatment. Seek professional help if in distress.
 
 ---
+
 
 
 
